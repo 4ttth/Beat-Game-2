@@ -27,6 +27,10 @@ function seed(db, levelsDir) {
     const audioFile = fs.readdirSync(dir).find((f) =>
       /\.(mp3|ogg|wav)$/i.test(f)
     )
+    // Optional background video
+    const videoFile = fs.readdirSync(dir).find((f) =>
+      /\.(mp4|webm)$/i.test(f)
+    )
 
     if (!fs.existsSync(levelJsonPath) || !fs.existsSync(beatsJsonPath) || !audioFile) {
       console.log(`[seed] Skipping ${folder} — missing files`)
@@ -34,6 +38,7 @@ function seed(db, levelsDir) {
     }
 
     const audioPath = path.join(dir, audioFile)
+    const videoPath = videoFile ? path.join(dir, videoFile) : null
     const meta = JSON.parse(fs.readFileSync(levelJsonPath, 'utf8'))
 
     // Check if already seeded (by title + artist combo)
@@ -44,8 +49,8 @@ function seed(db, levelsDir) {
     if (existing) continue
 
     db.prepare(`
-      INSERT INTO levels (title, artist, bpm, duration, max_score, audio_path, beats_path, creator_note, is_bundled)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)
+      INSERT INTO levels (title, artist, bpm, duration, max_score, audio_path, beats_path, video_path, creator_note, is_bundled)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
     `).run(
       meta.title   || 'Untitled',
       meta.artist  || 'Unknown',
@@ -54,6 +59,7 @@ function seed(db, levelsDir) {
       meta.maxScore || meta.max_score || 0,
       audioPath,
       beatsJsonPath,
+      videoPath,
       // Flag 2 — private note that leaks via the verbose GET /api/levels/:id
       meta.creatorNote || 'CLCTF{4p1_t0ld_m3_t00_much}'
     )

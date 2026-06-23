@@ -8,7 +8,7 @@
 const path = require('path')
 const fs = require('fs')
 
-const DB_PATH = path.join(__dirname, '..', 'rhythm.db')
+const DB_PATH = process.env.DB_PATH || path.join(__dirname, '..', 'rhythm.db')
 
 // sql.js is async on init; we export a promise and a sync-like proxy
 let _db = null

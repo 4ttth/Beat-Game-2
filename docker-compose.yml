@@ -7,12 +7,15 @@ services:
     restart: unless-stopped
     environment:
       PORT: "3001"
+      # DB lives on a named volume (see below), seeded from levels/bundled/ on first run
+      DB_PATH: /app/data/rhythm.db
       # Override these with a .env file or environment variables in production
       ADMIN_SECRET: ${ADMIN_SECRET:-CLCTF{wh0_w4ntz_c00ki3s}}
       CREATOR_SECRET: ${CREATOR_SECRET:-beats-creator-2026}
     volumes:
-      # Persist the database and uploaded level files outside the container
-      - ./backend/rhythm.db:/app/rhythm.db
+      # Persistent SQLite DB (survives restarts/redeploys, regenerated if removed)
+      - beat-db:/app/data
+      # Level assets — bundled/ ships in git; upload_*/ created at runtime
       - ./backend/levels:/app/levels
     networks:
       - beat-net
@@ -36,3 +39,6 @@ services:
 networks:
   beat-net:
     driver: bridge
+
+volumes:
+  beat-db:

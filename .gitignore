@@ -21,11 +21,8 @@ Thumbs.db
 *.log
 npm-debug.log*
 
-# ────────────────────────────────────────────────────────────────────────────
-# DATA — add these two lines when you are done seeding / testing:
-#
-#   backend/rhythm.db
-#   backend/levels/
-#
-# Do NOT add them now or git will stop tracking your level files and database.
-# ────────────────────────────────────────────────────────────────────────────
+# ── Runtime data ─────────────────────────────────
+# The SQLite DB is generated at runtime by seeding levels/bundled/ — never commit it.
+backend/rhythm.db
+# Levels uploaded at runtime via the creator panel (bundled/ stays tracked).
+backend/levels/upload_*/

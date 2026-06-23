@@ -1,0 +1,9 @@
+{
+  "title": "Demo Beat",
+  "artist": "Rhythm Game",
+  "bpm": 120,
+  "duration": 60,
+  "maxScore": 72000,
+  "beatCount": 120,
+  "holdCount": 12
+}

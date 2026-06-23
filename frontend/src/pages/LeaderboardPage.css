@@ -1,0 +1,114 @@
+.lb-page { overflow-y: auto; }
+
+.lb-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 32px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(10,10,15,0.9);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.lb-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  flex: 1;
+  text-align: center;
+}
+
+.lb-content {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 0 24px;
+}
+
+.lb-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lb-row {
+  display: grid;
+  grid-template-columns: 40px 1fr 140px 80px 80px;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--transition-fast);
+}
+
+.lb-row:hover { border-color: rgba(0,245,255,0.2); }
+
+.lb-row-header {
+  background: transparent;
+  border-color: transparent;
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  padding-bottom: 4px;
+}
+.lb-row-header:hover { border-color: transparent; }
+
+.lb-row-me {
+  background: rgba(0,245,255,0.05);
+  border-color: rgba(0,245,255,0.25) !important;
+}
+
+.lb-rank {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.rank-top-1 { color: #ffd700; text-shadow: 0 0 10px #ffd700; }
+.rank-top-2 { color: #c0c0c0; text-shadow: 0 0 10px #c0c0c0; }
+.rank-top-3 { color: #cd7f32; text-shadow: 0 0 10px #cd7f32; }
+
+.lb-username {
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lb-row-me .lb-username { color: var(--accent-cyan); }
+
+.lb-score {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: right;
+}
+
+.lb-extra {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.lb-loading {
+  display: flex;
+  justify-content: center;
+  padding: 60px;
+}
+
+.lb-empty {
+  text-align: center;
+  padding: 60px;
+  color: var(--text-secondary);
+}

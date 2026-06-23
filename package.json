@@ -1,0 +1,14 @@
+{
+  "name": "beat-game",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" --names \"backend,frontend\" --prefix-colors \"cyan,magenta\"",
+    "dev:backend": "npm.cmd --prefix backend run dev",
+    "dev:frontend": "npm.cmd --prefix frontend run dev",
+    "install:all": "npm.cmd install && npm.cmd --prefix frontend install && npm.cmd --prefix backend install --ignore-scripts"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

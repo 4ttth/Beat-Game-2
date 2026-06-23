@@ -1,0 +1,5 @@
+{
+  "watch": ["src"],
+  "ignore": ["levels/upload_*", "levels/upload_*/**", "levels/**/*.mp4", "levels/**/*.webm", "levels/**/*.wav", "levels/**/*.mp3"],
+  "ext": "js,json"
+}

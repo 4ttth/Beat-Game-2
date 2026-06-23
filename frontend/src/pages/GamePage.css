@@ -1,0 +1,681 @@
+/* ═══════════════════════════════════════════════════════════════
+   RHYTHM — Guitar Hero style game page
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Page shell ───────────────────────────────────────────────── */
+.game-page {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #080810;
+  overflow: hidden;
+  will-change: transform; /* screen shake anchor */
+}
+
+/* ── Overlays (loading / countdown) ──────────────────────────── */
+.overlay-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 50;
+  background: radial-gradient(ellipse at 50% 60%, #0d0d1e 0%, #050508 100%);
+}
+
+.overlay-label {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.gh-spinner {
+  width: 48px; height: 48px;
+  border: 3px solid rgba(0,245,255,0.15);
+  border-top-color: var(--accent-cyan);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Countdown */
+.countdown-song {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--accent-cyan);
+  text-shadow: 0 0 30px var(--accent-cyan);
+  letter-spacing: 0.15em;
+}
+.countdown-artist {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-top: -10px;
+}
+.countdown-number {
+  font-family: var(--font-display);
+  font-size: 9rem;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 0 60px var(--accent-cyan), 0 0 120px var(--accent-cyan);
+  line-height: 1;
+  margin: 8px 0;
+}
+.countdown-keys {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+.ck {
+  width: 48px; height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.1rem; font-weight: 900;
+  border-radius: 6px;
+  border: 2px solid;
+}
+.lane-color-0 { color: #00f5ff; border-color: #00f5ff; background: rgba(0,245,255,0.1); }
+.lane-color-1 { color: #ff00ff; border-color: #ff00ff; background: rgba(255,0,255,0.1); }
+.lane-color-2 { color: #00ff88; border-color: #00ff88; background: rgba(0,255,136,0.1); }
+.lane-color-3 { color: #ffaa00; border-color: #ffaa00; background: rgba(255,170,0,0.1); }
+
+/* ── HUD ───────────────────────────────────────────────────────── */
+.hud {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, transparent 100%);
+  z-index: 20;
+  pointer-events: none;
+}
+
+.hud-sub {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+}
+
+.hud-big {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 0.05em;
+  transition: color 0.2s;
+}
+
+.hyper-text {
+  background: linear-gradient(90deg, #ff0, #f0f, #0ff, #0f0, #ff0);
+  background-size: 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: hue-slide 0.6s linear infinite;
+}
+@keyframes hue-slide { to { background-position: 300% center; } }
+
+.hud-mid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.hud-mult {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 900;
+  transition: color 0.25s, text-shadow 0.25s, transform 0.15s;
+}
+.mult-1x { color: rgba(255,255,255,0.35); }
+.mult-2x { color: #ff9900; text-shadow: 0 0 16px #ff9900; }
+.mult-3x { color: #ff00ff; text-shadow: 0 0 20px #ff00ff; }
+.mult-4x {
+  color: #ffff00;
+  text-shadow: 0 0 30px #ffff00, 0 0 60px #ff0;
+  animation: mult4-pulse 0.35s ease-in-out infinite alternate;
+}
+@keyframes mult4-pulse {
+  from { transform: scale(1); }
+  to   { transform: scale(1.25); }
+}
+
+.hud-streak {
+  font-size: 0.75rem;
+  color: #ff9900;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.hud-right { text-align: right; }
+.hud-title-text {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.6);
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Highway ───────────────────────────────────────────────────── */
+.highway {
+  position: absolute;
+  inset: 72px 0 0 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 10;
+}
+
+/* Slight perspective tilt — classic Guitar Hero look */
+.highway-inner {
+  position: relative;
+  width: 440px;
+  height: 100%;
+  /* Perspective applied to the container; lanes stretch toward horizon */
+  transform-origin: 50% 100%;
+  transform: perspective(900px) rotateX(12deg);
+  transform-style: preserve-3d;
+}
+
+/* Lane dividers */
+.lane-dividers {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 2;
+}
+.divider {
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.12) 40%, rgba(255,255,255,0.25) 100%);
+}
+
+/* Speed lines — animated vertical stripes for depth */
+.speed-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+.speed-line {
+  position: absolute;
+  top: -20%;
+  width: 1px;
+  height: 140%;
+  background: linear-gradient(180deg, transparent, rgba(255,255,255,0.04) 50%, transparent);
+  left: calc(var(--i, 0) * 8.33%);
+  animation: speed-scroll 1.2s linear infinite;
+  animation-delay: calc(var(--i, 0) * -0.1s);
+}
+@keyframes speed-scroll {
+  from { transform: translateY(-30%); }
+  to   { transform: translateY(100%); }
+}
+
+/* ── Lanes ──────────────────────────────────────────────────────── */
+.lane {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 108px;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  touch-action: none;
+}
+
+.gh-lane-0 { left: 0px;   background: rgba(0,245,255,0.025); }
+.gh-lane-1 { left: 110px; background: rgba(255,0,255,0.025); }
+.gh-lane-2 { left: 220px; background: rgba(0,255,136,0.025); }
+.gh-lane-3 { left: 330px; background: rgba(255,170,0,0.025); }
+
+/* Lane press flash */
+.gh-lane-0:active { background: rgba(0,245,255,0.12); }
+.gh-lane-1:active { background: rgba(255,0,255,0.12); }
+.gh-lane-2:active { background: rgba(0,255,136,0.12); }
+.gh-lane-3:active { background: rgba(255,170,0,0.12); }
+
+/* ── Hit line ──────────────────────────────────────────────────── */
+.hit-line {
+  position: absolute;
+  bottom: 80px;
+  left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(0,245,255,0.5) 10%,
+    rgba(255,0,255,0.5) 35%,
+    rgba(0,255,136,0.5) 60%,
+    rgba(255,170,0,0.5) 88%,
+    transparent
+  );
+  box-shadow: 0 0 12px rgba(255,255,255,0.3);
+  z-index: 6;
+  pointer-events: none;
+}
+
+/* ── Hit zones ─────────────────────────────────────────────────── */
+.hit-zones {
+  position: absolute;
+  bottom: 80px;
+  left: 0; right: 0;
+  height: 0;
+  display: flex;
+  z-index: 7;
+  pointer-events: none;
+}
+
+.hit-zone {
+  position: relative;
+  width: 108px;
+  height: 54px;
+  transform: translateY(-50%);
+  border-radius: 8px;
+  border: 3px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: all;
+  cursor: pointer;
+  user-select: none;
+  touch-action: none;
+  transition: box-shadow 0.1s;
+  will-change: transform, box-shadow;
+}
+
+.hz-0 { border-color: #00f5ff; background: rgba(0,245,255,0.1);  box-shadow: 0 0 8px #00f5ff44; }
+.hz-1 { border-color: #ff00ff; background: rgba(255,0,255,0.1);  box-shadow: 0 0 8px #ff00ff44; }
+.hz-2 { border-color: #00ff88; background: rgba(0,255,136,0.1);  box-shadow: 0 0 8px #00ff8844; }
+.hz-3 { border-color: #ffaa00; background: rgba(255,170,0,0.1);  box-shadow: 0 0 8px #ffaa0044; }
+
+.hz-key {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 900;
+  pointer-events: none;
+}
+.hz-0 .hz-key { color: #00f5ff; }
+.hz-1 .hz-key { color: #ff00ff; }
+.hz-2 .hz-key { color: #00ff88; }
+.hz-3 .hz-key { color: #ffaa00; }
+
+/* ── Beat notes ────────────────────────────────────────────────── */
+.beat {
+  position: absolute;
+  width: 102px;      /* lane width minus a bit of padding */
+  left: 3px;
+  pointer-events: none;
+  will-change: top;
+}
+
+/* TAP gem — flat pill like GH */
+.beat-tap .gem {
+  width: 102px;
+  height: 54px;
+  border-radius: 10px;
+  border: 3px solid;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Shiny inner gloss */
+.beat-tap .gem::before {
+  content: '';
+  position: absolute;
+  top: 4px; left: 8px; right: 8px;
+  height: 40%;
+  border-radius: 6px 6px 50% 50%;
+  background: rgba(255,255,255,0.25);
+}
+
+.beat-lane-0 .gem { border-color: #00f5ff; background: rgba(0,245,255,0.25); box-shadow: 0 0 14px #00f5ff, inset 0 0 12px rgba(0,245,255,0.3); }
+.beat-lane-1 .gem { border-color: #ff00ff; background: rgba(255,0,255,0.25); box-shadow: 0 0 14px #ff00ff, inset 0 0 12px rgba(255,0,255,0.3); }
+.beat-lane-2 .gem { border-color: #00ff88; background: rgba(0,255,136,0.25); box-shadow: 0 0 14px #00ff88, inset 0 0 12px rgba(0,255,136,0.3); }
+.beat-lane-3 .gem { border-color: #ffaa00; background: rgba(255,170,0,0.25); box-shadow: 0 0 14px #ffaa00, inset 0 0 12px rgba(255,170,0,0.3); }
+
+/* ── Flag 4 — 22-column background overlay ──────────────────────── */
+
+/* Full-screen layer behind the highway (z-index 10) */
+.flag-highway-overlay {
+  position: absolute;
+  top: 72px; /* below HUD */
+  left: 0; right: 0; bottom: 0;
+  z-index: 5;
+  display: flex;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* One column per flag character — auto-fills the full width */
+.flag-col {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Character label at the hit-line height */
+.flag-col-fret {
+  position: absolute;
+  bottom: 80px;
+  left: 1px; right: 1px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: clamp(0.45rem, 1.1vw, 0.75rem);
+  font-weight: 900;
+  border: 1.5px solid;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 2;
+  box-shadow: 0 0 8px var(--fglow, #00f5ff);
+  animation: flag-fret-pulse 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes flag-fret-pulse {
+  from { opacity: 0.7;  filter: brightness(0.9); }
+  to   { opacity: 1.0;  filter: brightness(1.5); }
+}
+
+/* Falling beat tile inside each column */
+.flag-beat {
+  position: absolute;
+  left: 1px; right: 1px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1.5px solid;
+  top: -24px;
+  animation: flag-beat-fall linear infinite;
+}
+
+@keyframes flag-beat-fall {
+  0%   { transform: translateY(0);      opacity: 0;   }
+  5%   { opacity: 0.7; }
+  90%  { opacity: 0.5; }
+  100% { transform: translateY(110vh);  opacity: 0;   }
+}
+
+/* Updated D/F/J/K fret key labels after flag activation */
+.flag-key-active {
+  animation: flag-key-pulse 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes flag-key-pulse {
+  from { text-shadow: 0 0 4px currentColor; }
+  to   { text-shadow: 0 0 20px currentColor, 0 0 40px currentColor; }
+}
+
+/* Gem label (kept for potential future use) */
+.gem-label {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #000;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: 0;
+}
+
+/* HOLD note — tail at top, head (gem) at bottom (Guitar Hero style) */
+.hold-tail {
+  position: absolute;
+  top: 0;
+  left: 30px;
+  width: 42px;
+  border-radius: 4px 4px 0 0;
+  border: 2px solid;
+  opacity: 0.65;
+}
+.hold-head {
+  width: 102px;
+  height: 54px;
+  border-radius: 10px;
+  border: 3px solid;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+.hold-head::before {
+  content: '';
+  position: absolute;
+  top: 4px; left: 8px; right: 8px;
+  height: 40%;
+  border-radius: 6px 6px 50% 50%;
+  background: rgba(255,255,255,0.2);
+}
+
+.beat-lane-0 .hold-head { border-color: #00f5ff; background: rgba(0,245,255,0.25); box-shadow: 0 0 12px #00f5ff; }
+.beat-lane-0 .hold-tail  { border-color: #00f5ff; background: rgba(0,245,255,0.15); }
+.beat-lane-1 .hold-head { border-color: #ff00ff; background: rgba(255,0,255,0.25); box-shadow: 0 0 12px #ff00ff; }
+.beat-lane-1 .hold-tail  { border-color: #ff00ff; background: rgba(255,0,255,0.15); }
+.beat-lane-2 .hold-head { border-color: #00ff88; background: rgba(0,255,136,0.25); box-shadow: 0 0 12px #00ff88; }
+.beat-lane-2 .hold-tail  { border-color: #00ff88; background: rgba(0,255,136,0.15); }
+.beat-lane-3 .hold-head { border-color: #ffaa00; background: rgba(255,170,0,0.25); box-shadow: 0 0 12px #ffaa00; }
+.beat-lane-3 .hold-tail  { border-color: #ffaa00; background: rgba(255,170,0,0.15); }
+
+/* ── Feedback labels ───────────────────────────────────────────── */
+.feedback-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 30;
+}
+
+.feedback-label {
+  position: absolute;
+  transform: translateX(-50%);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ── Particles ─────────────────────────────────────────────────── */
+.particle {
+  position: absolute;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 40;
+  will-change: transform, opacity;
+}
+
+/* ── Reactive background glow layer ───────────────────────────────── */
+.bg-reactive {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  background: transparent;
+  will-change: opacity;
+}
+
+/* ── Hit ring — expands outward on each press ───────────────────── */
+.hit-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 14px;
+  border: 3px solid;
+  pointer-events: none;
+  z-index: 20;
+  transform-origin: center;
+}
+
+/* ── Active hold note ───────────────────────────────────────────── */
+.beat-active .hold-head {
+  animation: hold-active-pulse 0.35s ease-in-out infinite alternate;
+  transform-origin: center;
+}
+.beat-active .hold-tail {
+  opacity: 0.9;
+  filter: brightness(1.6);
+}
+@keyframes hold-active-pulse {
+  from { transform: scale(1);    filter: brightness(1.4); }
+  to   { transform: scale(1.06); filter: brightness(2.2); }
+}
+
+/* ── Streak background effects ─────────────────────────────────── */
+
+/* 2x — warm tint + subtle highway glow */
+.streak-2x { background: #090810 !important; }
+.streak-2x .highway-inner::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 30%, rgba(255,100,0,0.08) 100%);
+  pointer-events: none;
+}
+
+/* 3x — magenta pulse + light highway shake */
+.streak-3x {
+  animation: bg-pulse-3x 0.55s ease-in-out infinite alternate;
+}
+@keyframes bg-pulse-3x {
+  from { background: #080810; }
+  to   { background: #150015; }
+}
+.streak-3x .gem,
+.streak-3x .hold-head {
+  animation: gem-pulse 0.3s ease-in-out infinite alternate;
+}
+@keyframes gem-pulse {
+  from { filter: brightness(1); }
+  to   { filter: brightness(1.7); }
+}
+.streak-3x .highway-inner {
+  animation: highway-shake-3x 0.45s ease-in-out infinite;
+}
+@keyframes highway-shake-3x {
+  0%, 100% { transform: perspective(900px) rotateX(12deg) translateX(0); }
+  30%      { transform: perspective(900px) rotateX(12.2deg) translateX(-4px); }
+  70%      { transform: perspective(900px) rotateX(11.8deg) translateX(4px); }
+}
+
+/* 4x — FULL HYPER: heavy shake + rainbow + chromatic chaos */
+.streak-4x {
+  animation: bg-hyper 0.25s linear infinite;
+}
+@keyframes bg-hyper {
+  0%   { background: #0b0012; }
+  25%  { background: #00120a; }
+  50%  { background: #0c0a00; }
+  75%  { background: #00090c; }
+  100% { background: #0b0012; }
+}
+.streak-4x .highway-inner {
+  animation: highway-shake-4x 0.18s ease-in-out infinite;
+}
+@keyframes highway-shake-4x {
+  0%, 100% { transform: perspective(900px) rotateX(12deg)   translate(0, 0); }
+  15%      { transform: perspective(900px) rotateX(12.5deg) translate(-8px,  3px); }
+  35%      { transform: perspective(900px) rotateX(11.5deg) translate( 8px, -3px); }
+  55%      { transform: perspective(900px) rotateX(12.3deg) translate(-6px,  5px); }
+  75%      { transform: perspective(900px) rotateX(11.7deg) translate( 6px, -5px); }
+  90%      { transform: perspective(900px) rotateX(12.1deg) translate(-3px,  2px); }
+}
+
+/* Rainbow lane cycling at 4x */
+.streak-4x .gh-lane-0 { animation: rainbow-lane 0.8s linear infinite 0s; }
+.streak-4x .gh-lane-1 { animation: rainbow-lane 0.8s linear infinite 0.2s; }
+.streak-4x .gh-lane-2 { animation: rainbow-lane 0.8s linear infinite 0.4s; }
+.streak-4x .gh-lane-3 { animation: rainbow-lane 0.8s linear infinite 0.6s; }
+@keyframes rainbow-lane {
+  0%   { background: rgba(255,0,0,0.10); }
+  16%  { background: rgba(255,165,0,0.10); }
+  33%  { background: rgba(255,255,0,0.10); }
+  50%  { background: rgba(0,255,0,0.10); }
+  66%  { background: rgba(0,0,255,0.10); }
+  83%  { background: rgba(128,0,128,0.10); }
+  100% { background: rgba(255,0,0,0.10); }
+}
+
+/* 4x — gems spin-glow ring */
+.streak-4x .gem::after,
+.streak-4x .hold-head::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 14px;
+  border: 2px solid rgba(255,255,0,0.8);
+  animation: spin-ring 0.5s linear infinite;
+}
+@keyframes spin-ring {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* 4x speed lines go brighter & faster */
+.streak-4x .speed-line {
+  background: linear-gradient(180deg, transparent, rgba(255,255,255,0.14) 50%, transparent);
+  animation-duration: 0.35s !important;
+}
+
+/* 4x — HUD score text shakes too */
+.streak-4x .hud-big {
+  animation: hue-slide 0.6s linear infinite, hud-shake 0.2s ease-in-out infinite;
+}
+@keyframes hud-shake {
+  0%, 100% { transform: translate(0, 0); }
+  25%      { transform: translate(-2px, 1px); }
+  75%      { transform: translate(2px, -1px); }
+}
+
+/* ── Hyperactive overlay (flashing vignette at 4x) ─────────────── */
+.hyper-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 35;
+  border-radius: 0;
+  box-shadow: inset 0 0 120px rgba(255,255,0,0.15), inset 0 0 60px rgba(255,0,255,0.1);
+  animation: hyper-vignette 0.3s ease-in-out infinite alternate;
+}
+@keyframes hyper-vignette {
+  from { box-shadow: inset 0 0 120px rgba(255,255,0,0.12), inset 0 0 60px rgba(255,0,255,0.08); }
+  to   { box-shadow: inset 0 0 160px rgba(0,255,255,0.18), inset 0 0 80px rgba(255,0,255,0.15); }
+}
+
+/* ── Missed beat — turns red and fades ─────────────────────────── */
+.beat-missed .gem,
+.beat-missed .hold-head {
+  border-color: #ff0044 !important;
+  background:   rgba(255,0,68,0.35) !important;
+  box-shadow:   0 0 18px #ff0044 !important;
+  animation: missed-flash 0.2s ease-out forwards;
+}
+.beat-missed .hold-tail {
+  border-color: #ff0044 !important;
+  background:   rgba(255,0,68,0.2) !important;
+}
+@keyframes missed-flash {
+  0%   { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 0.3; transform: scale(0.9); }
+}

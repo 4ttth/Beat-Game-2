@@ -1,0 +1,109 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 24px;
+}
+
+.modal-box {
+  width: 100%;
+  max-width: 480px;
+  border-color: rgba(0,245,255,0.2);
+  box-shadow: 0 0 60px rgba(0,245,255,0.1);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--accent-cyan);
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast);
+}
+.modal-close:hover { color: var(--text-primary); }
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.file-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.file-drop {
+  display: block;
+  background: rgba(255,255,255,0.03);
+  border: 1px dashed rgba(0,245,255,0.3);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: border-color var(--transition-mid), background var(--transition-mid);
+}
+.file-drop:hover {
+  border-color: var(--accent-cyan);
+  background: rgba(0,245,255,0.05);
+}
+
+.file-name-placeholder { color: var(--text-dim); font-size: 0.9rem; }
+.file-name-chosen { color: var(--accent-green); font-size: 0.9rem; }
+
+.upload-error {
+  color: var(--accent-red);
+  font-size: 0.85rem;
+  padding: 8px 12px;
+  background: rgba(255,0,68,0.08);
+  border: 1px solid rgba(255,0,68,0.3);
+  border-radius: var(--radius-sm);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.modal-hint {
+  margin-top: 20px;
+  padding: 12px;
+  background: rgba(255,255,255,0.02);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.modal-hint p {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+.modal-hint code {
+  font-size: 0.72rem;
+  color: var(--accent-yellow);
+  font-family: monospace;
+  word-break: break-all;
+}

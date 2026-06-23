@@ -1,0 +1,38 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: beat-game-backend
+    restart: unless-stopped
+    environment:
+      PORT: "3001"
+      # Override these with a .env file or environment variables in production
+      ADMIN_SECRET: ${ADMIN_SECRET:-CLCTF{wh0_w4ntz_c00ki3s}}
+      CREATOR_SECRET: ${CREATOR_SECRET:-beats-creator-2026}
+    volumes:
+      # Persist the database and uploaded level files outside the container
+      - ./backend/rhythm.db:/app/rhythm.db
+      - ./backend/levels:/app/levels
+    networks:
+      - beat-net
+    # Not exposed to the host — only reachable via the frontend nginx proxy
+    expose:
+      - "3001"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: beat-game-frontend
+    restart: unless-stopped
+    ports:
+      - "${PORT:-80}:80"
+    depends_on:
+      - backend
+    networks:
+      - beat-net
+
+networks:
+  beat-net:
+    driver: bridge

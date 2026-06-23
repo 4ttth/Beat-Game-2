@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 540" width="900" height="540">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#13131f"/>
+      <stop offset="100%" stop-color="#0a0a0f"/>
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow2">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="540" fill="url(#bg)"/>
+
+  <!-- Scanlines -->
+  <pattern id="scan" x="0" y="0" width="2" height="4" patternUnits="userSpaceOnUse">
+    <rect width="2" height="2" fill="rgba(0,245,255,0.025)"/>
+  </pattern>
+  <rect width="900" height="540" fill="url(#scan)"/>
+
+  <!-- Outer frame -->
+  <rect x="24" y="24" width="852" height="492" rx="16" ry="16"
+        fill="none" stroke="rgba(255,0,255,0.35)" stroke-width="1.5"/>
+  <rect x="30" y="30" width="840" height="480" rx="12" ry="12"
+        fill="none" stroke="rgba(0,245,255,0.12)" stroke-width="1"/>
+
+  <!-- Corner accents -->
+  <polyline points="24,80 24,24 80,24"    fill="none" stroke="#ff00ff" stroke-width="2.5" filter="url(#glow)"/>
+  <polyline points="820,24 876,24 876,80" fill="none" stroke="#ff00ff" stroke-width="2.5" filter="url(#glow)"/>
+  <polyline points="24,460 24,516 80,516" fill="none" stroke="#ff00ff" stroke-width="2.5" filter="url(#glow)"/>
+  <polyline points="820,516 876,516 876,460" fill="none" stroke="#ff00ff" stroke-width="2.5" filter="url(#glow)"/>
+
+  <!-- Trophy icon (simplified) -->
+  <g transform="translate(390,90)" filter="url(#glow2)">
+    <!-- Cup body -->
+    <path d="M-50,0 Q-55,60 0,80 Q55,60 50,0 Z" fill="none" stroke="#ffff00" stroke-width="3"/>
+    <!-- Handles -->
+    <path d="M-50,10 Q-80,30 -60,60" fill="none" stroke="#ffff00" stroke-width="3"/>
+    <path d="M50,10 Q80,30 60,60" fill="none" stroke="#ffff00" stroke-width="3"/>
+    <!-- Stem -->
+    <line x1="0" y1="80" x2="0" y2="105" stroke="#ffff00" stroke-width="3"/>
+    <line x1="-25" y1="105" x2="25" y2="105" stroke="#ffff00" stroke-width="3"/>
+    <!-- Star -->
+    <text x="0" y="50" text-anchor="middle" font-size="28" fill="#ffff00">★</text>
+  </g>
+
+  <!-- CLCTF 2026 label -->
+  <text x="450" y="230"
+        text-anchor="middle"
+        font-family="'Courier New', monospace"
+        font-size="13"
+        font-weight="bold"
+        letter-spacing="8"
+        fill="#ff00ff"
+        filter="url(#glow)">
+    CENTRAL LUZON CTF 2026
+  </text>
+
+  <!-- Main heading -->
+  <text x="450" y="290"
+        text-anchor="middle"
+        font-family="'Courier New', monospace"
+        font-size="38"
+        font-weight="bold"
+        letter-spacing="6"
+        fill="#00f5ff"
+        filter="url(#glow2)">
+    ACCESS GRANTED
+  </text>
+
+  <!-- Divider line -->
+  <line x1="200" y1="310" x2="700" y2="310" stroke="rgba(0,245,255,0.3)" stroke-width="1"/>
+
+  <!-- Subtitle -->
+  <text x="450" y="350"
+        text-anchor="middle"
+        font-family="'Courier New', monospace"
+        font-size="15"
+        fill="#8888aa"
+        letter-spacing="2">
+    You have successfully authenticated as administrator.
+  </text>
+
+  <!-- Placeholder note -->
+  <text x="450" y="390"
+        text-anchor="middle"
+        font-family="'Courier New', monospace"
+        font-size="12"
+        fill="rgba(136,136,170,0.5)"
+        letter-spacing="1">
+    [ Replace this file: frontend/public/admin-flag.svg ]
+  </text>
+
+  <!-- Bottom badge -->
+  <rect x="320" y="440" width="260" height="44" rx="8" ry="8"
+        fill="rgba(0,245,255,0.06)" stroke="rgba(0,245,255,0.25)" stroke-width="1"/>
+  <text x="450" y="468"
+        text-anchor="middle"
+        font-family="'Courier New', monospace"
+        font-size="14"
+        font-weight="bold"
+        fill="#00ff88"
+        letter-spacing="3"
+        filter="url(#glow)">
+    CLCTF{wh0_w4ntz_c00ki3s}
+  </text>
+</svg>

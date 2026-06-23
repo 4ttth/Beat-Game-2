@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /admin
+Disallow: /api/admin/backup
+
+# Nothing to see here...
+# CLCTF{wh0_w4ntz_c00ki3s}

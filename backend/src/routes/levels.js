@@ -10,6 +10,23 @@ const router = express.Router()
 
 const LEVELS_DIR = path.join(__dirname, '..', '..', 'levels')
 
+// Stored paths may be absolute paths from another machine/OS (e.g. a Windows
+// dev box) baked into the DB. If the stored path doesn't exist, re-derive it
+// relative to the current levels directory so files resolve in any environment
+// (host dev, Docker container, etc.).
+function resolveLevelFile(storedPath) {
+  if (!storedPath) return storedPath
+  if (fs.existsSync(storedPath)) return storedPath
+  const norm = String(storedPath).replace(/\\/g, '/')
+  const idx = norm.toLowerCase().lastIndexOf('/levels/')
+  if (idx !== -1) {
+    const rel = norm.slice(idx + '/levels/'.length)
+    const candidate = path.join(LEVELS_DIR, rel)
+    if (fs.existsSync(candidate)) return candidate
+  }
+  return storedPath
+}
+
 function removeLevelFiles(level) {
   const paths = [level.audio_path, level.beats_path, level.video_path].filter(Boolean)
   for (const filePath of paths) {
@@ -85,7 +102,7 @@ router.get('/:id/beats', requireAuth, (req, res) => {
   if (!level) return res.status(404).json({ error: 'Level not found' })
 
   try {
-    const raw = fs.readFileSync(level.beats_path, 'utf8')
+    const raw = fs.readFileSync(resolveLevelFile(level.beats_path), 'utf8')
     const beats = JSON.parse(raw)
     return res.json(beats)
   } catch {
@@ -97,30 +114,32 @@ router.get('/:id/beats', requireAuth, (req, res) => {
 router.get('/:id/audio', (req, res) => {
   const level = db.prepare('SELECT * FROM levels WHERE id = ?').get(req.params.id)
   if (!level) return res.status(404).json({ error: 'Level not found' })
-  if (!fs.existsSync(level.audio_path)) {
+  const audioPath = resolveLevelFile(level.audio_path)
+  if (!fs.existsSync(audioPath)) {
     return res.status(404).json({ error: 'Audio file not found' })
   }
   // Set explicit content type based on extension
-  const ext = path.extname(level.audio_path).toLowerCase()
+  const ext = path.extname(audioPath).toLowerCase()
   const mimeTypes = { '.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.ogg': 'audio/ogg', '.webm': 'audio/webm' }
   const mime = mimeTypes[ext] || 'audio/mpeg'
   res.setHeader('Content-Type', mime)
-  res.sendFile(path.resolve(level.audio_path))
+  res.sendFile(path.resolve(audioPath))
 })
 
 // GET /api/levels/:id/video — serves video file (mp4, webm)
 router.get('/:id/video', (req, res) => {
   const level = db.prepare('SELECT * FROM levels WHERE id = ?').get(req.params.id)
   if (!level) return res.status(404).json({ error: 'Level not found' })
-  if (!level.video_path || !fs.existsSync(level.video_path)) {
+  const videoPath = resolveLevelFile(level.video_path)
+  if (!videoPath || !fs.existsSync(videoPath)) {
     return res.status(404).json({ error: 'Video file not found' })
   }
   // Set explicit content type based on extension
-  const ext = path.extname(level.video_path).toLowerCase()
+  const ext = path.extname(videoPath).toLowerCase()
   const mimeTypes = { '.mp4': 'video/mp4', '.webm': 'video/webm' }
   const mime = mimeTypes[ext] || 'video/mp4'
   res.setHeader('Content-Type', mime)
-  res.sendFile(path.resolve(level.video_path))
+  res.sendFile(path.resolve(videoPath))
 })
 
 // POST /api/levels/upload

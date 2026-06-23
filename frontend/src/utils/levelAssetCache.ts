@@ -47,7 +47,8 @@ export async function preloadLevelAssets(level: Level): Promise<CachedLevelAsset
       ? (level.videoPath.toLowerCase().endsWith('.webm') ? 'video/webm' : 'video/mp4')
       : null
     const assets = { audioUrl, videoUrl, videoType }
-    cache.set(level.id, { promise, assets })
+    const entry = cache.get(level.id)
+    if (entry) entry.assets = assets
     return assets
   })()
 
